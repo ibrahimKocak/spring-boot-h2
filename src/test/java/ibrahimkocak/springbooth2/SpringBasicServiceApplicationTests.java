@@ -2,24 +2,30 @@ package ibrahimkocak.springbooth2;
 
 import ibrahimkocak.springbooth2.controller.ControllerUser;
 import ibrahimkocak.springbooth2.model.User;
+import ibrahimkocak.springbooth2.service.ServiceUserTests;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Date;
 
-@SpringBootApplication
-public class SpringBootH2Application implements ApplicationRunner {
-
-    public static void main(String[] args) {
-
-        SpringApplication.run(SpringBootH2Application.class, args);
-    }
+@SpringBootTest
+class SpringBasicServiceApplicationTests implements ApplicationRunner {
 
     @Autowired
     ControllerUser controllerUser;
+    @Autowired
+    ServiceUserTests serviceUserTests;
+
+    @Test
+    void contextLoads() {
+
+        serviceUserTests.testGetAll();
+        serviceUserTests.testGetId();
+    }
+
 
     void addUsers(int count) {
 

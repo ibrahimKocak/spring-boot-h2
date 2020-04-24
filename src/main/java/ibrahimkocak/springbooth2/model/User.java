@@ -9,9 +9,9 @@ import java.util.Date;
 
 @Entity
 @Table(name = "user")
-public class User implements Cloneable {
+public class User {
 
-    public enum AccountType{
+    public enum AccountType {
         Standard,
         Premium
     }
@@ -38,23 +38,23 @@ public class User implements Cloneable {
 
         boolean isUpdated = false;
 
-        if(user.name != null && !user.name.equals(name)){
+        if (user.name != null && !user.name.equals(name)) {
             setName(user.name);
             isUpdated = true;
         }
-        if(user.surname != null && !user.surname.equals(surname)){
+        if (user.surname != null && !user.surname.equals(surname)) {
             setSurname(user.surname);
             isUpdated = true;
         }
-        if(user.accountType != null && !user.accountType.equals(accountType)){
+        if (user.accountType != null && !user.accountType.equals(accountType)) {
             setAccountType(user.accountType);
             isUpdated = true;
         }
-        if(user.birthday != null && !user.birthday.equals(birthday)){
+        if (user.birthday != null && !user.birthday.equals(birthday)) {
             setBirthday(user.birthday);
             isUpdated = true;
         }
-        if(isUpdated)
+        if (isUpdated)
             setLastUpdateTime(new Date());
 
     }
@@ -93,7 +93,7 @@ public class User implements Cloneable {
 
     public void setBirthday(Date birthday) {
 
-        if(birthday != null)
+        if (birthday != null)
             this.birthday = (Date) birthday.clone();
     }
 
@@ -113,6 +113,20 @@ public class User implements Cloneable {
         this.lastUpdateTime = lastUpdateTime;
     }
 
+    public User clone() {
+
+        User user = new User();
+        user.id = this.id;
+        user.name = this.name;
+        user.surname = this.surname;
+        user.accountType = this.accountType;
+        user.birthday = this.birthday;
+        user.creationTime = this.creationTime;
+        user.lastUpdateTime = this.lastUpdateTime;
+        return user;
+    }
+
+    /*
     @Override
     public User clone(){
 
@@ -125,6 +139,14 @@ public class User implements Cloneable {
         }
 
         return clone;
+    }
+*/
+    public static User copy(User user) {
+
+        User user1 = new User();
+        user1.setUser(user);
+
+        return user1;
     }
 
     @Override

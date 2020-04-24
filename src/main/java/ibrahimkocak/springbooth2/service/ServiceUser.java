@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class ServiceUser {
@@ -17,34 +18,33 @@ public class ServiceUser {
         return repositoryUser.findAll();
     }
 
-    public User getId(String id) {
-        return repositoryUser.findById(id).get();
+    public Optional<User> getId(Long id) {
+        return repositoryUser.findById(id);
     }
 
-    public List<User> getAccountType(User.AccountType accountType ) {
-        return  repositoryUser.findByAccountType(accountType);
+    public List<User> getAccountType(User.AccountType accountType) {
+        return repositoryUser.findByAccountType(accountType);
     }
 
     public List<User> getName(String name) {
-        return  repositoryUser.findByName(name);
+        return repositoryUser.findByName(name);
     }
 
     public User save(User user) {
         return repositoryUser.save(user);
     }
 
-    public Boolean deleteAll() {
+    public void deleteAll() {
         repositoryUser.deleteAll();
-        return true;
     }
 
-    public User delete(String id) {
+    public User delete(Long id) {
         User user = repositoryUser.findById(id).get();
         repositoryUser.deleteById(id);
         return user;
     }
 
-    public User update(String id, User user) {
+    public User update(Long id, User user) {
         User userDb = repositoryUser.findById(id).get();
         userDb.setUser(user);
         return repositoryUser.save(userDb);

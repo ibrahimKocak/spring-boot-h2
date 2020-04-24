@@ -14,6 +14,7 @@ import javax.validation.Valid;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 public class ControllerUser {
@@ -28,7 +29,7 @@ public class ControllerUser {
 
         try {
             return ResponseEntity.ok(serviceUser.getAll());
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'getAll'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -36,12 +37,11 @@ public class ControllerUser {
     }
 
     @GetMapping("/get/{id}")
-    public ResponseEntity<User> get(@PathVariable("id") String id) {
+    public ResponseEntity<User> get(@PathVariable("id") Long id) {
 
         try {
-            System.out.println(serviceUser.getId(id));
-            return ResponseEntity.ok(serviceUser.getId(id));
-        }catch (Exception e) {
+            return ResponseEntity.ok(serviceUser.getId(id).get());
+        } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -53,7 +53,7 @@ public class ControllerUser {
 
         try {
             return ResponseEntity.ok(serviceUser.getName(name));
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -65,7 +65,7 @@ public class ControllerUser {
 
         try {
             return ResponseEntity.ok(serviceUser.getAccountType(accountType));
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -76,14 +76,14 @@ public class ControllerUser {
     public ResponseEntity<User> save(@Valid @RequestBody User user) {
 
         try {
-            user.setCreationTime(new  Date());
-            user.setLastUpdateTime(new  Date());
-            if(user.getAccountType() == null)
+            user.setCreationTime(new Date());
+            user.setLastUpdateTime(new Date());
+            if (user.getAccountType() == null)
                 user.setAccountType(User.AccountType.Standard);
-            else if(!user.getAccountType().equals(User.AccountType.Premium))
+            else if (!user.getAccountType().equals(User.AccountType.Premium))
                 user.setAccountType(User.AccountType.Standard);
             return ResponseEntity.ok(serviceUser.save(user));
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'save'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
@@ -91,44 +91,41 @@ public class ControllerUser {
     }
 
     @DeleteMapping("/deleteAll")
-    public ResponseEntity<Boolean> deleteAll() {
+    public ResponseEntity<?> deleteAll() {
 
         try {
-            return ResponseEntity.ok(serviceUser.deleteAll());
-        }catch (Exception e) {
-            logger.error("Error on function 'delete'");
+            serviceUser.deleteAll();
+            return ResponseEntity.ok().build();
+        } catch (Exception e) {
+            logger.error("Error on function 'deleteAll'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
     @DeleteMapping("/delete/{id}")
-    public ResponseEntity<User> delete(@PathVariable("id") String id) {
+    public ResponseEntity<User> delete(@PathVariable("id") Long id) {
 
         try {
             return ResponseEntity.ok(serviceUser.delete(id));
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'delete'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);
         }
     }
 
-    private boolean isUpdatable(Object newOne, Object oldOne) {
-
-        return newOne != null && !newOne.equals(oldOne);
-    }
-
     @PutMapping("/put/{id}")
-    public ResponseEntity<HashMap<String,User>> update(@PathVariable("id") String id, @RequestBody User user) {
+    public ResponseEntity<Map<String, User>> update(@PathVariable("id") Long id, @RequestBody User user) {
 
         try {
-            HashMap<String, User> map = new HashMap<>();
-            User userOld = serviceUser.getId(id).clone();
-            map.put("Old Value",userOld);
-            map.put("New Value",serviceUser.update(id,user));
+            Map<String, User> map = new HashMap<>();
+            //User userOld = serviceUser.getId(id).get().clone();
+            User userOld = serviceUser.getId(id).get().clone();
+            map.put("Old Value", userOld);
+            map.put("New Value", serviceUser.update(id, user));
             return ResponseEntity.ok(map);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("Error on function 'put'");
             logger.error(e.getMessage(), e);
             throw new ResponseStatusException(HttpStatus.BAD_REQUEST, e.getMessage(), e);

@@ -7,8 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface IRepositoryUser extends JpaRepository<User, String> {
+public interface IRepositoryUser extends JpaRepository<User, Long> {
 
     List<User> findByName(String name);
+
     List<User> findByAccountType(User.AccountType accountType);
 }
