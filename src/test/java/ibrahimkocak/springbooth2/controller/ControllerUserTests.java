@@ -31,6 +31,7 @@ public class ControllerUserTests {
     private MockMvc mockMvc;
     @MockBean
     private ServiceUser serviceUser;
+    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testGelAll() throws Exception {
@@ -49,17 +50,15 @@ public class ControllerUserTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(list));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(list));
     }
 
     @Test
     public void testGet() throws Exception {
 
         User user = getUser();
-        Optional<User> optionalUser = Optional.of(user);
 
-        when(serviceUser.getId(Mockito.anyLong())).thenReturn(optionalUser);
+        when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(user));
 
         MvcResult result = mockMvc.perform(get("/get/1"))
                 //.andDo(print())
@@ -67,8 +66,7 @@ public class ControllerUserTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(user));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(user));
     }
 
     @Test
@@ -88,8 +86,7 @@ public class ControllerUserTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(list));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(list));
     }
 
     @Test
@@ -109,8 +106,7 @@ public class ControllerUserTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(list));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(list));
     }
 
     @Test
@@ -120,19 +116,15 @@ public class ControllerUserTests {
 
         when(serviceUser.save(Mockito.any(User.class))).thenReturn(user);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String s = mapper.writeValueAsString(user);
         MvcResult result = mockMvc.perform(post("/post")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(
-                        s))
+                .content(user.toJson(objectMapper)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(user));
-
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(user));
     }
 
     @Test
@@ -158,8 +150,7 @@ public class ControllerUserTests {
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        ObjectMapper mapper = new ObjectMapper();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(user));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(user));
     }
 
     @Test
@@ -174,17 +165,15 @@ public class ControllerUserTests {
         when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(userOld));
         when(serviceUser.update(Mockito.anyLong(), Mockito.any(User.class))).thenReturn(userNew);
 
-        ObjectMapper mapper = new ObjectMapper();
-        String s = mapper.writeValueAsString(userNew);
         MvcResult result = mockMvc.perform(put("/put/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(s))
+                .content(userNew.toJson(objectMapper)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        assertThat(content).isEqualTo(mapper.writeValueAsString(map));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(map));
     }
 
     private User getUser() {

@@ -39,9 +39,9 @@ public class ServiceUserTests {
     @Test
     public void testGetId() {
 
-        Optional<User> optionalUser = Optional.of(getUser());
-        when(repositoryUser.findById(1L)).thenReturn(optionalUser);
-        assertThat(serviceUser.getId(1L)).isEqualTo(optionalUser);
+        User user = new User();
+        when(repositoryUser.findById(1L)).thenReturn(Optional.of(user));
+        assertThat(serviceUser.getId(1L)).isEqualTo(Optional.of(user));
     }
 
 
@@ -87,19 +87,19 @@ public class ServiceUserTests {
     @Test
     public void testDelete() {
 
-        Optional<User> optionalUser = Optional.of(getUser());
-        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(optionalUser);
-        assertThat(serviceUser.delete(Mockito.anyLong())).isEqualTo(optionalUser.get());
+        User user = getUser();
+        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+        assertThat(serviceUser.delete(Mockito.anyLong())).isEqualTo(user);
     }
 
     @Test
     public void testUpdate() {
 
-        Optional<User> optionalUser = Optional.of(getUser());
-        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(optionalUser);
-        optionalUser.get().setName("Ahmet");
-        when(repositoryUser.save(optionalUser.get())).thenReturn(optionalUser.get());
-        assertThat(serviceUser.update(Mockito.anyLong(), optionalUser.get())).isEqualTo(optionalUser.get());
+        User user = getUser();
+        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+        user.setName("Ahmet");
+        when(repositoryUser.save(user)).thenReturn(user);
+        assertThat(serviceUser.update(Mockito.anyLong(), user)).isEqualTo(user);
     }
 
     private User getUser() {

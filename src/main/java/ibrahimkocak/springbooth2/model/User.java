@@ -1,5 +1,8 @@
 package ibrahimkocak.springbooth2.model;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -147,6 +150,10 @@ public class User {
         user1.setUser(user);
 
         return user1;
+    }
+
+    public String toJson(ObjectMapper mapper) throws JsonProcessingException {
+        return  mapper.writeValueAsString(this);
     }
 
     @Override
