@@ -37,7 +37,7 @@ public class User {
         //System.out.println(this.getClass().getSimpleName());
     }
 
-    public void setUser(User user) {
+    public boolean setUser(User user) {
 
         boolean isUpdated = false;
 
@@ -60,6 +60,7 @@ public class User {
         if (isUpdated)
             setLastUpdateTime(new Date());
 
+        return isUpdated;
     }
 
     public Long getId() {

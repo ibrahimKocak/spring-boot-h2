@@ -39,15 +39,27 @@ public class ServiceUser {
     }
 
     public User delete(Long id) {
-        User user = repositoryUser.findById(id).get();
-        repositoryUser.deleteById(id);
-        return user;
+
+        Optional<User> optionalUser = repositoryUser.findById(id);
+
+        if(optionalUser.isPresent()) {
+            repositoryUser.deleteById(id);
+            return optionalUser.get();
+        }
+        return null;
     }
 
     public User update(Long id, User user) {
-        User userDb = repositoryUser.findById(id).get();
-        userDb.setUser(user);
-        return repositoryUser.save(userDb);
+
+        Optional<User> optionalUser = repositoryUser.findById(id);
+
+        if(optionalUser.isPresent()) {
+            if(optionalUser.get().setUser(user))
+                optionalUser = Optional.of(repositoryUser.save(optionalUser.get()));
+
+            return optionalUser.get();
+        }
+        return null;
     }
 
 }

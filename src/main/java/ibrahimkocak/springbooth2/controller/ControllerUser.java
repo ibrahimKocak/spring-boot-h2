@@ -105,7 +105,13 @@ public class ControllerUser {
     public ResponseEntity<Map<String, User>> delete(@PathVariable("id") Long id) {
 
         try {
-            return ResponseEntity.ok(Collections.singletonMap("Deleted Value", serviceUser.delete(id)));
+            if(serviceUser.getId(id).isPresent()) {
+
+                User userDeleted = serviceUser.delete(id);
+                if (userDeleted != null)
+                    return ResponseEntity.ok(Collections.singletonMap("Deleted Value", userDeleted));
+            }
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error on function 'delete'");
             logger.error(e.getMessage(), e);
@@ -118,15 +124,16 @@ public class ControllerUser {
 
         try {
             Optional<User> optionalUser = serviceUser.getId(id);
-
             if(optionalUser.isPresent()) {
 
                 Map<String, User> map = new HashMap<>();
                 map.put("Old Value", optionalUser.get().clone());
                 map.put("New Value", serviceUser.update(id,user));
-                return ResponseEntity.ok(map);
-            }else
-                return ResponseEntity.notFound().build();
+
+                if(map.get("New Value") != null)
+                    return ResponseEntity.ok(map);
+            }
+            return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error on function 'put'");
             logger.error(e.getMessage(), e);
