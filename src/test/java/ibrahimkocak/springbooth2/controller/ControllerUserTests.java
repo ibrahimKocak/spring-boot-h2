@@ -4,7 +4,6 @@ package ibrahimkocak.springbooth2.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import ibrahimkocak.springbooth2.model.User;
 import ibrahimkocak.springbooth2.service.ServiceUser;
-import org.apache.log4j.Logger;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +16,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -24,8 +24,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(ControllerUser.class)
 public class ControllerUserTests {
-
-    private final Logger logger = Logger.getLogger(ControllerUserTests.class);
 
     @Autowired
     private MockMvc mockMvc;
@@ -44,7 +42,7 @@ public class ControllerUserTests {
 
         when(serviceUser.getAll()).thenReturn(list);
 
-        MvcResult result = mockMvc.perform(get("/getAll"))
+        MvcResult result = mockMvc.perform(get("/users"))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -60,7 +58,7 @@ public class ControllerUserTests {
 
         when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(user));
 
-        MvcResult result = mockMvc.perform(get("/get/1"))
+        MvcResult result = mockMvc.perform(get("/users/1"))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -80,7 +78,7 @@ public class ControllerUserTests {
 
         when(serviceUser.getName(Mockito.anyString())).thenReturn(list);
 
-        MvcResult result = mockMvc.perform(get("/getByName/ibrahim"))
+        MvcResult result = mockMvc.perform(get("/usersByName/ibrahim"))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -100,7 +98,7 @@ public class ControllerUserTests {
 
         when(serviceUser.getAccountType(User.AccountType.Standard)).thenReturn(list);
 
-        MvcResult result = mockMvc.perform(get("/getByAccountType/" + User.AccountType.Standard))
+        MvcResult result = mockMvc.perform(get("/usersByAccountType/" + User.AccountType.Standard))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -116,7 +114,7 @@ public class ControllerUserTests {
 
         when(serviceUser.save(Mockito.any(User.class))).thenReturn(user);
 
-        MvcResult result = mockMvc.perform(post("/post")
+        MvcResult result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(user.toJson(objectMapper)))
                 .andDo(print())
@@ -130,27 +128,38 @@ public class ControllerUserTests {
     @Test
     public void testDeleteAll() throws Exception {
 
-        mockMvc.perform(delete("/deleteAll"))
+        List<User> list = new ArrayList<>();
+        list.add(new User());
+
+        doAnswer((i) -> {
+
+            list.clear();
+            return true;
+
+        }).when(serviceUser).deleteAll();
+
+        mockMvc.perform(delete("/users"))
                 //.andDo(print())
                 .andExpect(status().isOk());
 
-        assertThat(serviceUser.getAll().size()).isEqualTo(0);
+        assertThat(list.size()).isEqualTo(0);
     }
 
     @Test
     public void testDelete() throws Exception {
 
-        User user = getUser();
+        User userDeleted = getUser();
+        Map<String, User> map = Collections.singletonMap("Deleted Value", getUser());
 
-        when(serviceUser.delete(Mockito.anyLong())).thenReturn(user);
+        when(serviceUser.delete(Mockito.anyLong())).thenReturn(userDeleted);
 
-        MvcResult result = mockMvc.perform(delete("/delete/1"))
+        MvcResult result = mockMvc.perform(delete("/users/1"))
                 //.andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
 
         String content = result.getResponse().getContentAsString();
-        assertThat(content).isEqualTo(objectMapper.writeValueAsString(user));
+        assertThat(content).isEqualTo(objectMapper.writeValueAsString(map));
     }
 
     @Test
@@ -165,7 +174,7 @@ public class ControllerUserTests {
         when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(userOld));
         when(serviceUser.update(Mockito.anyLong(), Mockito.any(User.class))).thenReturn(userNew);
 
-        MvcResult result = mockMvc.perform(put("/put/1")
+        MvcResult result = mockMvc.perform(put("/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(userNew.toJson(objectMapper)))
                 .andDo(print())
@@ -174,6 +183,22 @@ public class ControllerUserTests {
 
         String content = result.getResponse().getContentAsString();
         assertThat(content).isEqualTo(objectMapper.writeValueAsString(map));
+    }
+
+    //Wrong Request Tests
+
+    @Test
+    public void testBadRequest() throws Exception {
+
+        List<User> list = new ArrayList<>();
+        list.add(getUser());
+        list.add(getUser());
+
+        when(serviceUser.getAll()).thenReturn(list);
+
+        mockMvc.perform(get("/userss"))
+                //.andDo(print())
+                .andExpect(status().isNotFound());
     }
 
     private User getUser() {

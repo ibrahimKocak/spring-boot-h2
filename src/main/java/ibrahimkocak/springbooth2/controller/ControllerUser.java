@@ -11,20 +11,17 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 
 import javax.validation.Valid;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 public class ControllerUser {
 
-    private Logger logger = Logger.getLogger(ControllerUser.class);
+    private final Logger logger = Logger.getLogger(ControllerUser.class);
 
     @Autowired
     private ServiceUser serviceUser;
 
-    @GetMapping("/getAll")
+    @GetMapping("/users")
     public ResponseEntity<List<User>> getAll() {
 
         try {
@@ -36,11 +33,12 @@ public class ControllerUser {
         }
     }
 
-    @GetMapping("/get/{id}")
+    @GetMapping("/users/{id}")
     public ResponseEntity<User> get(@PathVariable("id") Long id) {
 
         try {
-            return ResponseEntity.ok(serviceUser.getId(id).get());
+            Optional<User> optionalUser = serviceUser.getId(id);
+            return optionalUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
         } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
@@ -48,7 +46,7 @@ public class ControllerUser {
         }
     }
 
-    @GetMapping("/getByName/{name}")
+    @GetMapping("/usersByName/{name}")
     public ResponseEntity<List<User>> getByName(@PathVariable("name") String name) {
 
         try {
@@ -60,7 +58,7 @@ public class ControllerUser {
         }
     }
 
-    @GetMapping("/getByAccountType/{accountType}")
+    @GetMapping("/usersByAccountType/{accountType}")
     public ResponseEntity<List<User>> getByAccountType(@PathVariable("accountType") User.AccountType accountType) {
 
         try {
@@ -72,7 +70,7 @@ public class ControllerUser {
         }
     }
 
-    @PostMapping("/post")
+    @PostMapping("/users")
     public ResponseEntity<User> save(@Valid @RequestBody User user) {
 
         try {
@@ -90,7 +88,7 @@ public class ControllerUser {
         }
     }
 
-    @DeleteMapping("/deleteAll")
+    @DeleteMapping("/users")
     public ResponseEntity<?> deleteAll() {
 
         try {
@@ -103,11 +101,11 @@ public class ControllerUser {
         }
     }
 
-    @DeleteMapping("/delete/{id}")
-    public ResponseEntity<User> delete(@PathVariable("id") Long id) {
+    @DeleteMapping("/users/{id}")
+    public ResponseEntity<Map<String, User>> delete(@PathVariable("id") Long id) {
 
         try {
-            return ResponseEntity.ok(serviceUser.delete(id));
+            return ResponseEntity.ok(Collections.singletonMap("Deleted Value", serviceUser.delete(id)));
         } catch (Exception e) {
             logger.error("Error on function 'delete'");
             logger.error(e.getMessage(), e);
@@ -115,16 +113,20 @@ public class ControllerUser {
         }
     }
 
-    @PutMapping("/put/{id}")
+    @PutMapping("/users/{id}")
     public ResponseEntity<Map<String, User>> update(@PathVariable("id") Long id, @RequestBody User user) {
 
         try {
-            Map<String, User> map = new HashMap<>();
-            //User userOld = serviceUser.getId(id).get().clone();
-            User userOld = serviceUser.getId(id).get().clone();
-            map.put("Old Value", userOld);
-            map.put("New Value", serviceUser.update(id, user));
-            return ResponseEntity.ok(map);
+            Optional<User> optionalUser = serviceUser.getId(id);
+
+            if(optionalUser.isPresent()) {
+
+                Map<String, User> map = new HashMap<>();
+                map.put("Old Value", optionalUser.get().clone());
+                map.put("New Value", serviceUser.update(id,user));
+                return ResponseEntity.ok(map);
+            }else
+                return ResponseEntity.notFound().build();
         } catch (Exception e) {
             logger.error("Error on function 'put'");
             logger.error(e.getMessage(), e);
