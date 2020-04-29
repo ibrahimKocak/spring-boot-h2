@@ -117,7 +117,7 @@ public class User {
         this.lastUpdateTime = lastUpdateTime;
     }
 
-    public User clone() {
+    public User cloneIt() {
 
         User user = new User();
         user.id = this.id;
@@ -128,29 +128,6 @@ public class User {
         user.creationTime = this.creationTime;
         user.lastUpdateTime = this.lastUpdateTime;
         return user;
-    }
-
-    /*
-    @Override
-    public User clone(){
-
-        User clone = null;
-        try {
-            clone = (User) super.clone();
-            clone.birthday = (Date) this.getBirthday().clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-
-        return clone;
-    }
-*/
-    public static User copy(User user) {
-
-        User user1 = new User();
-        user1.setUser(user);
-
-        return user1;
     }
 
     public String toJson(ObjectMapper mapper) throws JsonProcessingException {

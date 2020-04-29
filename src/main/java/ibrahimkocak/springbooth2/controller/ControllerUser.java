@@ -22,7 +22,7 @@ public class ControllerUser {
     private ServiceUser serviceUser;
 
     @GetMapping("/users")
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<Iterable<User>> getAll() {
 
         try {
             return ResponseEntity.ok(serviceUser.getAll());
@@ -127,7 +127,7 @@ public class ControllerUser {
             if(optionalUser.isPresent()) {
 
                 Map<String, User> map = new HashMap<>();
-                map.put("Old Value", optionalUser.get().clone());
+                map.put("Old Value", optionalUser.get().cloneIt());
                 map.put("New Value", serviceUser.update(id,user));
 
                 if(map.get("New Value") != null)

@@ -33,15 +33,14 @@ public class ServiceUserTests {
 
         when(repositoryUser.findAll()).thenReturn(list);
         assertThat(serviceUser.getAll()).isEqualTo(list);
-        assertThat(serviceUser.getAll().size()).isEqualTo(2);
     }
 
     @Test
     public void testGetId() {
 
-        User user = new User();
-        when(repositoryUser.findById(1L)).thenReturn(Optional.of(user));
-        assertThat(serviceUser.getId(1L)).isEqualTo(Optional.of(user));
+        User user = getUser();
+        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
+        assertThat(serviceUser.getId(Mockito.anyLong())).isEqualTo(Optional.of(user));
     }
 
 
@@ -54,7 +53,6 @@ public class ServiceUserTests {
 
         when(repositoryUser.findByAccountType(User.AccountType.Standard)).thenReturn(list);
         assertThat(serviceUser.getAccountType(User.AccountType.Standard)).isEqualTo(list);
-        assertThat(serviceUser.getAccountType(User.AccountType.Standard)).size().isEqualTo(2);
     }
 
     @Test
@@ -66,7 +64,6 @@ public class ServiceUserTests {
 
         when(repositoryUser.findByName("ibrahim")).thenReturn(list);
         assertThat(serviceUser.getName("ibrahim")).isEqualTo(list);
-        assertThat(serviceUser.getName("ibrahim")).size().isEqualTo(2);
     }
 
     @Test

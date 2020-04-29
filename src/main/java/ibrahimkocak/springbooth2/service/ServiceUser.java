@@ -14,7 +14,7 @@ public class ServiceUser {
     @Autowired
     private IRepositoryUser repositoryUser;
 
-    public List<User> getAll() {
+    public Iterable<User> getAll() {
         return repositoryUser.findAll();
     }
 
