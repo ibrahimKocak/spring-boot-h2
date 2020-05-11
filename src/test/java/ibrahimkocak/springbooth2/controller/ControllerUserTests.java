@@ -151,6 +151,7 @@ public class ControllerUserTests {
         User userDeleted = getUser();
         Map<String, User> map = Collections.singletonMap("Deleted Value", getUser());
 
+        when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(userDeleted));
         when(serviceUser.delete(Mockito.anyLong())).thenReturn(userDeleted);
 
         MvcResult result = mockMvc.perform(delete("/users/1"))
