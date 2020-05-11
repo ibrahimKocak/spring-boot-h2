@@ -31,12 +31,6 @@ public class User {
     private Date creationTime;
     private Date lastUpdateTime;
 
-    public User() {
-
-        //setStatus(this.getClass().getSimpleName());
-        //System.out.println(this.getClass().getSimpleName());
-    }
-
     public boolean setUser(User user) {
 
         boolean isUpdated = false;
@@ -128,10 +122,6 @@ public class User {
         user.creationTime = this.creationTime;
         user.lastUpdateTime = this.lastUpdateTime;
         return user;
-    }
-
-    public String toJson(ObjectMapper mapper) throws JsonProcessingException {
-        return  mapper.writeValueAsString(this);
     }
 
     @Override

@@ -116,7 +116,7 @@ public class ControllerUserTests {
 
         MvcResult result = mockMvc.perform(post("/users")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(user.toJson(objectMapper)))
+                .content(objectMapper.writeValueAsString(user)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
@@ -177,7 +177,7 @@ public class ControllerUserTests {
 
         MvcResult result = mockMvc.perform(put("/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
-                .content(userNew.toJson(objectMapper)))
+                .content(objectMapper.writeValueAsString(userNew)))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andReturn();
