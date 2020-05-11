@@ -42,7 +42,7 @@ public class ServiceUser {
 
         Optional<User> optionalUser = repositoryUser.findById(id);
 
-        if(optionalUser.isPresent()) {
+        if (optionalUser.isPresent()) {
             repositoryUser.deleteById(id);
             return optionalUser.get();
         }
@@ -53,8 +53,8 @@ public class ServiceUser {
 
         Optional<User> optionalUser = repositoryUser.findById(id);
 
-        if(optionalUser.isPresent()) {
-            if(optionalUser.get().setUser(user))
+        if (optionalUser.isPresent()) {
+            if (optionalUser.get().setUser(user))
                 optionalUser = Optional.of(repositoryUser.save(optionalUser.get()));
 
             return optionalUser.get();
