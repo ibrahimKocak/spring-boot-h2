@@ -105,7 +105,7 @@ public class ControllerUser {
     public ResponseEntity<Map<String, User>> delete(@PathVariable("id") Long id) {
 
         try {
-            if(serviceUser.getId(id).isPresent()) {
+            if (serviceUser.getId(id).isPresent()) {
 
                 User userDeleted = serviceUser.delete(id);
                 if (userDeleted != null)
@@ -124,13 +124,13 @@ public class ControllerUser {
 
         try {
             Optional<User> optionalUser = serviceUser.getId(id);
-            if(optionalUser.isPresent()) {
+            if (optionalUser.isPresent()) {
 
                 Map<String, User> map = new HashMap<>();
                 map.put("Old Value", optionalUser.get().cloneIt());
-                map.put("New Value", serviceUser.update(id,user));
+                map.put("New Value", serviceUser.update(id, user));
 
-                if(map.get("New Value") != null)
+                if (map.get("New Value") != null)
                     return ResponseEntity.ok(map);
             }
             return ResponseEntity.notFound().build();
