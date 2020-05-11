@@ -13,13 +13,19 @@ import java.util.Date;
 @SpringBootApplication
 public class SpringBootH2Application implements ApplicationRunner {
 
+    @Autowired
+    ControllerUser controllerUser;
+
     public static void main(String[] args) {
 
         SpringApplication.run(SpringBootH2Application.class, args);
     }
 
-    @Autowired
-    ControllerUser controllerUser;
+    @Override
+    public void run(ApplicationArguments args){
+
+        addUsers(5);
+    }
 
     void addUsers(int count) {
 
@@ -34,11 +40,5 @@ public class SpringBootH2Application implements ApplicationRunner {
 
             controllerUser.save(user);
         }
-    }
-
-    @Override
-    public void run(ApplicationArguments args) throws Exception {
-
-        addUsers(5);
     }
 }
