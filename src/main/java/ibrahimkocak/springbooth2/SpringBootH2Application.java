@@ -7,8 +7,11 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.client.RestTemplate;
 
-import java.util.Date;
+import java.util.*;
 
 @SpringBootApplication
 public class SpringBootH2Application implements ApplicationRunner {
@@ -25,8 +28,10 @@ public class SpringBootH2Application implements ApplicationRunner {
     public void run(ApplicationArguments args){
 
         addUsers(5);
+        retrieveFromEndpoint();
     }
 
+    //For add some data to Db
     void addUsers(int count) {
 
         for (int i = 0; i < count; i++) {
@@ -40,5 +45,23 @@ public class SpringBootH2Application implements ApplicationRunner {
 
             controllerUser.save(user);
         }
+    }
+
+
+    //Send a request to endpoint
+    @Autowired
+    private RestTemplate restTemplate;
+    @Bean
+    public RestTemplate newRestTemplate() {
+        return new RestTemplate();
+    }
+
+    void retrieveFromEndpoint() {
+
+        ResponseEntity<User[]> response = restTemplate.getForEntity("http://localhost:8080/users", User[].class);
+        List<User> userList = Arrays.asList(Objects.requireNonNull(response.getBody()));
+
+        userList.forEach(user -> user.setName("ahem"));
+        userList.forEach(System.out::println);
     }
 }
