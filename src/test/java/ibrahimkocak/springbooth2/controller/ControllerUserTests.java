@@ -25,11 +25,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WebMvcTest(ControllerUser.class)
 public class ControllerUserTests {
 
+    private final ObjectMapper objectMapper = new ObjectMapper();
     @Autowired
     private MockMvc mockMvc;
     @MockBean
     private ServiceUser serviceUser;
-    private final ObjectMapper objectMapper = new ObjectMapper();
 
     @Test
     public void testGelAll() throws Exception {
