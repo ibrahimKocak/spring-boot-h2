@@ -11,13 +11,18 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.*;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 
 @SpringBootApplication
 public class SpringBootH2Application implements ApplicationRunner {
 
     @Autowired
     ControllerUser controllerUser;
+    @Autowired
+    private RestTemplate restTemplate;
 
     public static void main(String[] args) {
 
@@ -25,7 +30,7 @@ public class SpringBootH2Application implements ApplicationRunner {
     }
 
     @Override
-    public void run(ApplicationArguments args){
+    public void run(ApplicationArguments args) {
 
         addUsers(5);
         retrieveFromEndpoint();
@@ -47,10 +52,7 @@ public class SpringBootH2Application implements ApplicationRunner {
         }
     }
 
-
     //Send a request to endpoint
-    @Autowired
-    private RestTemplate restTemplate;
     @Bean
     public RestTemplate newRestTemplate() {
         return new RestTemplate();
