@@ -1,8 +1,5 @@
 package ibrahimkocak.springbooth2.model;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -13,11 +10,6 @@ import java.util.Date;
 @Entity
 @Table(name = "user")
 public class User {
-
-    public enum AccountType {
-        Standard,
-        Premium
-    }
 
     @Id
     @GeneratedValue
@@ -129,5 +121,10 @@ public class User {
         return String.format(
                 "\nUser[id=%s, name='%s', surname='%s', birthday='%tc' , creationDate='%tc' , accountType='%s']\n",
                 id, surname, name, birthday, creationTime, accountType);
+    }
+
+    public enum AccountType {
+        Standard,
+        Premium
     }
 }
