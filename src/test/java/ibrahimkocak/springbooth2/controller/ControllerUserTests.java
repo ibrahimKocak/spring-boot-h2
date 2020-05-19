@@ -169,11 +169,11 @@ public class ControllerUserTests {
         User userOld = new User();
         User userNew = getUser();
         Map<String, User> map = new HashMap<>();
-        map.put("Old Value", userOld);
-        map.put("New Value", userNew);
+        map.put("Old_value", userOld);
+        map.put("New_value", userNew);
 
         when(serviceUser.getId(Mockito.anyLong())).thenReturn(Optional.of(userOld));
-        when(serviceUser.update(Mockito.anyLong(), Mockito.any(User.class))).thenReturn(userNew);
+        when(serviceUser.update(Mockito.anyLong(), Mockito.any(User.class))).thenReturn(map);
 
         MvcResult result = mockMvc.perform(put("/users/1")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -187,7 +187,6 @@ public class ControllerUserTests {
     }
 
     //Wrong Request Tests
-
     @Test
     public void testBadRequest() throws Exception {
 
