@@ -2,15 +2,14 @@ package ibrahimkocak.springbooth2.service;
 
 import ibrahimkocak.springbooth2.model.User;
 import ibrahimkocak.springbooth2.repository.IRepositoryUser;
+import org.apache.commons.lang3.SerializationUtils;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.when;
@@ -92,11 +91,19 @@ public class ServiceUserTests {
     @Test
     public void testUpdate() {
 
-        User user = getUser();
-        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(Optional.of(user));
-        user.setName("Ahmet");
-        when(repositoryUser.save(user)).thenReturn(user);
-        assertThat(serviceUser.update(Mockito.anyLong(), user)).isEqualTo(user);
+        Map<String, User> userMap = new HashMap<>();
+
+        userMap.put("Old_value", getUser());
+        userMap.put("New_value", getUser());
+        userMap.get("New_value").setName("Ahmet");
+
+        when(repositoryUser.findById(Mockito.anyLong())).thenReturn(Optional.of(SerializationUtils.clone(userMap.get("Old_value"))));
+        when(repositoryUser.save(Mockito.any(User.class))).thenReturn(userMap.get("New_value"));
+
+        Map<String, User> userMapFromService = serviceUser.update(Mockito.anyLong(), userMap.get("New_value"));
+
+        assertThat(userMap.get("Old_value").getName()).isEqualTo(userMapFromService.get("Old_value").getName());
+        assertThat(userMap.get("New_value").getName()).isEqualTo(userMapFromService.get("New_value").getName());
     }
 
     private User getUser() {
