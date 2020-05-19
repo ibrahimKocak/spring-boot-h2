@@ -25,7 +25,7 @@ public class ControllerUser {
     public ResponseEntity<Iterable<User>> getAll() {
 
         try {
-            return ResponseEntity.ok(serviceUser.getAll());
+            return ResponseEntity.status(HttpStatus.OK).body(serviceUser.getAll());
         } catch (Exception e) {
             logger.error("Error on function 'getAll'");
             logger.error(e.getMessage(), e);
@@ -38,7 +38,10 @@ public class ControllerUser {
 
         try {
             Optional<User> optionalUser = serviceUser.getId(id);
-            return optionalUser.map(ResponseEntity::ok).orElseGet(() -> ResponseEntity.notFound().build());
+            if (optionalUser.isPresent())
+                return ResponseEntity.status(HttpStatus.OK).body(optionalUser.get());
+            else
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
@@ -50,7 +53,7 @@ public class ControllerUser {
     public ResponseEntity<List<User>> getByName(@PathVariable("name") String name) {
 
         try {
-            return ResponseEntity.ok(serviceUser.getName(name));
+            return ResponseEntity.status(HttpStatus.OK).body(serviceUser.getName(name));
         } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
@@ -62,7 +65,7 @@ public class ControllerUser {
     public ResponseEntity<List<User>> getByAccountType(@PathVariable("accountType") User.AccountType accountType) {
 
         try {
-            return ResponseEntity.ok(serviceUser.getAccountType(accountType));
+            return ResponseEntity.status(HttpStatus.OK).body(serviceUser.getAccountType(accountType));
         } catch (Exception e) {
             logger.error("Error on function 'get'");
             logger.error(e.getMessage(), e);
@@ -75,12 +78,14 @@ public class ControllerUser {
 
         try {
             user.setCreationTime(new Date());
-            user.setLastUpdateTime(new Date());
+            user.setLastUpdateTime(user.getCreationTime());
             if (user.getAccountType() == null)
                 user.setAccountType(User.AccountType.Standard);
             else if (!user.getAccountType().equals(User.AccountType.Premium))
                 user.setAccountType(User.AccountType.Standard);
-            return ResponseEntity.ok(serviceUser.save(user));
+
+            return ResponseEntity.status(HttpStatus.OK).body(serviceUser.save(user));
+
         } catch (Exception e) {
             logger.error("Error on function 'save'");
             logger.error(e.getMessage(), e);
@@ -93,7 +98,7 @@ public class ControllerUser {
 
         try {
             serviceUser.deleteAll();
-            return ResponseEntity.ok().build();
+            return ResponseEntity.status(HttpStatus.OK).build();
         } catch (Exception e) {
             logger.error("Error on function 'deleteAll'");
             logger.error(e.getMessage(), e);
@@ -109,9 +114,9 @@ public class ControllerUser {
 
                 User userDeleted = serviceUser.delete(id);
                 if (userDeleted != null)
-                    return ResponseEntity.ok(Collections.singletonMap("Deleted Value", userDeleted));
+                    return ResponseEntity.status(HttpStatus.OK).body(Collections.singletonMap("Deleted Value", userDeleted));
             }
-            return ResponseEntity.notFound().build();
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         } catch (Exception e) {
             logger.error("Error on function 'delete'");
             logger.error(e.getMessage(), e);
@@ -123,17 +128,17 @@ public class ControllerUser {
     public ResponseEntity<Map<String, User>> update(@PathVariable("id") Long id, @RequestBody User user) {
 
         try {
-            Optional<User> optionalUser = serviceUser.getId(id);
-            if (optionalUser.isPresent()) {
+            Map<String, User> userMap = serviceUser.update(id, user);
 
-                Map<String, User> map = new HashMap<>();
-                map.put("Old Value", optionalUser.get().cloneIt());
-                map.put("New Value", serviceUser.update(id, user));
+            if (userMap == null)
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
 
-                if (map.get("New Value") != null)
-                    return ResponseEntity.ok(map);
-            }
-            return ResponseEntity.notFound().build();
+            else if (userMap.get("Old_value").equals(userMap.get("New_value")))
+                return ResponseEntity.status(HttpStatus.NOT_MODIFIED).build();
+
+            else
+                return ResponseEntity.status(HttpStatus.OK).body(userMap);
+
         } catch (Exception e) {
             logger.error("Error on function 'put'");
             logger.error(e.getMessage(), e);
